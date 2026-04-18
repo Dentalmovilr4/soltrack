@@ -3,26 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dentalmovilr4 - Dashboard de Mercado</title>
+    <title>Dentalmovilr4 - Market & Game</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #020617; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
-        h1 { color: #38bdf8; border-bottom: 2px solid #1e293b; padding-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); border-color: #38bdf8; }
-        .name { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; }
-        .price { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: #f1f5f9; }
-        .change { font-size: 1rem; font-weight: 500; }
+        body { background-color: #020617; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        .header { border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; }
         .dmr4-card { border: 2px solid #fbbf24; background: linear-gradient(145deg, #0f172a, #1e1b4b); }
+        .btn-jugar { 
+            display: inline-block; background: #fbbf24; color: #020617; 
+            padding: 15px 30px; border-radius: 50px; font-weight: bold; 
+            text-decoration: none; margin-top: 30px; font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
     </style>
 </head>
 <body>
-    <h1>🚀 Dentalmovilr4 Market Live</h1>
-    <div class="grid" id="market-grid">
-        <p>Conectando con la blockchain...</p>
+
+    <div class="header">
+        <h1>🚀 Dentalmovilr4 Market Live</h1>
+        <p>Precios en tiempo real sincronizados desde Cloud Shell</p>
     </div>
+
+    <div class="grid" id="market-grid">
+        <p>Cargando datos de la blockchain...</p>
+    </div>
+
+    <a href="juego.html" class="btn-jugar">🐄 ¡Jugar Agro-Clicker DMR4!</a>
 
     <script>
         const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
@@ -36,21 +45,15 @@
 
             for (const coin in data) {
                 const isDMR4 = coin === 'dmr4';
-                const card = document.createElement('div');
-                card.className = `card ${isDMR4 ? 'dmr4-card' : ''}`;
-                
-                const precio = typeof data[coin].precio === 'number' ? data[coin].precio.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : `$${data[coin].precio}`;
-                const cambio = data[coin].cambio24h;
-                const colorCambio = cambio >= 0 ? '#4ade80' : '#f87171';
-
-                card.innerHTML = `
-                    <div class="name">${isDMR4 ? '💎 ' + coin : coin}</div>
-                    <div class="price">${precio}</div>
-                    <div class="change" style="color: ${colorCambio}">${cambio}% (24h)</div>
-                `;
-                grid.appendChild(card);
+                grid.innerHTML += `
+                    <div class="card ${isDMR4 ? 'dmr4-card' : ''}">
+                        <div style="color: #94a3b8; font-size: 0.8rem;">${coin.toUpperCase()}</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">$${data[coin].precio}</div>
+                        <div style="color: ${data[coin].cambio24h >= 0 ? '#4ade80' : '#f87171'}">${data[coin].cambio24h}%</div>
+                    </div>`;
             }
         });
     </script>
 </body>
 </html>
+
