@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dentalmovilr4 - Agro Clicker</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: sans-serif; text-align: center; padding: 20px; }
+        .game-card { background: #0f172a; border: 2px solid #38bdf8; border-radius: 20px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+        .stats-box { display: flex; justify-content: space-around; background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
+        .stat-val { font-weight: bold; display: block; font-size: 1.2rem; }
+        #vaca-btn { background: none; border: none; font-size: 100px; cursor: pointer; transition: transform 0.1s; user-select: none; -webkit-tap-highlight-color: transparent; }
+        #vaca-btn:active { transform: scale(0.8); }
+        .shop { margin-top: 20px; text-align: left; }
+        .upgrade-btn { width: 100%; background: #1e293b; color: white; border: 1px solid #38bdf8; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; }
+        .upgrade-btn:disabled { opacity: 0.5; border-color: #475569; }
+        .special { border-color: #fbbf24; color: #fbbf24; }
+    </style>
+</head>
+<body>
+
+    <h1>🚜 Agro-Clicker DMR4</h1>
+
+    <div class="game-card">
+        <div class="stats-box">
+            <div>🥛 Leche <span id="milk-txt" class="stat-val">0</span></div>
+            <div>💎 DMR4 <span id="dmr4-txt" class="stat-val">0</span></div>
+        </div>
+
+        <button id="vaca-btn">🐄</button>
+        <p id="pps-txt" style="color: #94a3b8; font-size: 0.8rem;">Producción: 0 L/s</p>
+
+        <div class="shop">
+            <button class="upgrade-btn" id="btn-riego" onclick="comprar('riego')">
+                💧 Riego Automático (+1 L/s)<br>Costo: 10 DMR4
+            </button>
+            <button class="upgrade-btn special" id="btn-bio" onclick="comprar('bio')">
+                🧬 Bio-Ganado AI (Click x2)<br>Costo: 25 DMR4
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 1. CONFIGURACIÓN FIREBASE (Borrar y pegar tu URL si es distinta)
+        const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('jugadores/admin');
+
+        // 2. VARIABLES DEL JUEGO
+        let leche = 0;
+        let dmr4 = 0;
+        let clickPower = 1;
+        let autoPower = 0;
+        let costoRiego = 10;
+        let costoBio = 25;
+
+        // 3. LÓGICA DE CLIC
+        const btnVaca = document.getElementById('vaca-btn');
+        btnVaca.addEventListener('click', () => {
+            leche += clickPower;
+            verificarConversion();
+            updateUI();
+        });
+
+        // 4. PRODUCCIÓN PASIVA (Riego)
+        setInterval(() => {
+            if (autoPower > 0) {
+                leche += autoPower;
+                verificarConversion();
+                updateUI();
+            }
+        }, 1000);
+
+        function verificarConversion() {
+            if (leche >= 100) {
+                let ganancia = Math.floor(leche / 100);
+                dmr4 += ganancia;
+                leche %= 100;
+                // Guardar en Firebase cada vez que ganas DMR4
+                db.set({ dmr4: dmr4, autoPower: autoPower, clickPower: clickPower });
+            }
+        }
+
+        function comprar(tipo) {
+            if (tipo === 'riego' && dmr4 >= costoRiego) {
+                dmr4 -= costoRiego;
+                autoPower += 1;
+                costoRiego = Math.floor(costoRiego * 1.6);
+                updateUI();
+            } else if (tipo === 'bio' && dmr4 >= costoBio) {
+                dmr4 -= costoBio;
+                clickPower *= 2;
+                costoBio = Math.floor(costoBio * 2.5);
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('milk-txt').innerText = Math.floor(leche);
+            document.getElementById('dmr4-txt').innerText = dmr4;
+            document.getElementById('pps-txt').innerText = `Producción: ${autoPower} L/s`;
+            document.getElementById('btn-riego').innerHTML = `💧 Riego Automático (+1 L/s)<br>Costo: ${costoRiego} DMR4`;
+            document.getElementById('btn-bio').innerHTML = `🧬 Bio-Ganado AI (Click x2)<br>Costo: ${costoBio} DMR4`;
+            
+            // Deshabilitar botones si no alcanza el dinero
+            document.getElementById('btn-riego').disabled = (dmr4 < costoRiego);
+            document.getElementById('btn-bio').disabled = (dmr4 < costoBio);
+        }
+
+        // Cargar datos al iniciar
+        db.once('value', (snap) => {
+            const data = snap.val();
+            if(data) {
+                dmr4 = data.dmr4 || 0;
+                autoPower = data.autoPower || 0;
+                clickPower = data.clickPower || 1;
+                updateUI();
+            }
+        });
+    </script>
+</body>
+</html>
