@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dentalmovilr4 - Market Live</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
+        .price { font-size: 1.5rem; font-weight: bold; color: #38bdf8; }
+        .dmr4 { border: 2px solid #facc15; }
+    </style>
+</head>
+<body>
+    <h1>Dentalmovilr4 Market</h1>
+    <div class="grid" id="market">
+        </div>
+
+    <script>
+        const firebaseConfig = {
+            databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('mercado');
+
+        db.on('value', (snapshot) => {
+            const data = snapshot.val();
+            let html = '';
+            for (let coin in data) {
+                html += `
+                    <div class="card ${coin === 'dmr4' ? 'dmr4' : ''}">
+                        <h3>${coin.toUpperCase()}</h3>
+                        <p class="price">$${data[coin].precio}</p>
+                        <p style="color: ${data[coin].cambio24h >= 0 ? '#4ade80' : '#f87171'}">
+                            ${data[coin].cambio24h}%
+                        </p>
+                    </div>`;
+            }
+            document.getElementById('market').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
