@@ -3,35 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dentalmovilr4 - Market & Game</title>
+    <title>Dentalmovilr4 - Market & NFT Collection</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         body { background-color: #020617; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
         .header { border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 40px; }
         .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; }
         .dmr4-card { border: 2px solid #fbbf24; background: linear-gradient(145deg, #0f172a, #1e1b4b); }
-        .btn-jugar { 
-            display: inline-block; background: #fbbf24; color: #020617; 
+        
+        /* SECCIÓN DE VENTAS */
+        .venta-section { background: #0f172a; border: 2px solid #38bdf8; border-radius: 20px; padding: 30px; margin-top: 50px; }
+        .nft-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+        .nft-item { width: 250px; background: #1e293b; border-radius: 15px; overflow: hidden; border: 1px solid #334155; }
+        .nft-item img { width: 100%; height: 200px; object-fit: cover; }
+        .nft-info { padding: 15px; text-align: left; }
+        
+        .btn-whatsapp { 
+            display: inline-block; background: #25d366; color: white; 
             padding: 15px 30px; border-radius: 50px; font-weight: bold; 
-            text-decoration: none; margin-top: 30px; font-size: 1.2rem;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            text-decoration: none; margin-top: 20px; font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
+        .btn-jugar { display: inline-block; background: #fbbf24; color: #020617; padding: 10px 20px; border-radius: 50px; text-decoration: none; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>🚀 Dentalmovilr4 Market Live</h1>
-        <p>Precios en tiempo real sincronizados desde Cloud Shell</p>
+        <p>Precios en tiempo real y Activos Agro-Tech</p>
     </div>
 
     <div class="grid" id="market-grid">
-        <p>Cargando datos de la blockchain...</p>
+        <p>Sincronizando con la blockchain...</p>
     </div>
 
-    <a href="juego.html" class="btn-jugar">🐄 ¡Jugar Agro-Clicker DMR4!</a>
+    <a href="juego.html" class="btn-jugar">🎮 Ir al Juego Agro-Clicker</a>
+
+    <div class="venta-section">
+        <h2>🐄 Venta de Colección: Terneros Tech</h2>
+        <p>Adquiere tus activos digitales y obtén beneficios en el ecosistema.</p>
+        
+        <div class="nft-display">
+            <div class="nft-item">
+                <img src="https://raw.githubusercontent.com/Dentalmovilr4/soltrack/main/terneros_001.jpg" alt="Terneros Tech">
+                <div class="nft-info">
+                    <strong style="color: #fbbf24;">Génesis #001</strong>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Beneficio: +20% Producción</p>
+                    <div style="font-weight: bold;">Precio: Consultar</div>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 20px;">¿Interesado en comprar o invertir?</p>
+        <a href="https://wa.me/573114275056?text=Hola%20colega,%20estoy%20interesado%20en%20los%20NFTs%20de%20Terneros%20Tech" class="btn-whatsapp">
+            📱 Contactar por WhatsApp
+        </a>
+    </div>
 
     <script>
         const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
@@ -42,7 +72,6 @@
             const data = snapshot.val();
             const grid = document.getElementById('market-grid');
             grid.innerHTML = '';
-
             for (const coin in data) {
                 const isDMR4 = coin === 'dmr4';
                 grid.innerHTML += `
