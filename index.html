@@ -8,44 +8,70 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         body { background-color: #020617; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
-        .card { background: #0f172a; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-bottom: 10px; }
-        .venta-section { background: #0f172a; border: 2px solid #38bdf8; border-radius: 20px; padding: 30px; margin-top: 50px; }
-        .nft-item { width: 250px; background: #1e293b; border-radius: 15px; overflow: hidden; border: 1px solid #334155; margin: auto; }
+        .header { border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .card { background: #0f172a; padding: 15px; border-radius: 15px; border: 1px solid #1e293b; }
+        .dmr4-card { border: 2px solid #fbbf24; background: linear-gradient(145deg, #0f172a, #1e1b4b); }
+        .btn-jugar { display: inline-block; background: #fbbf24; color: #020617; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin: 20px 0; font-size: 1.1rem; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+        .venta-section { background: #0f172a; border: 2px solid #38bdf8; border-radius: 20px; padding: 25px; margin-top: 40px; }
+        .nft-item { width: 260px; background: #1e293b; border-radius: 15px; overflow: hidden; border: 1px solid #334155; margin: 20px auto; }
         .nft-item img { width: 100%; height: 200px; object-fit: cover; }
-        .btn-whatsapp { display: inline-block; background: #25d366; color: white; padding: 15px 30px; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 20px; }
+        .btn-whatsapp { display: inline-block; background: #25d366; color: white; padding: 12px 25px; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <h1>🚀 Dentalmovilr4 Market</h1>
-    <div id="market-grid"></div>
+    <div class="header">
+        <h1>🚀 Dentalmovilr4 Market</h1>
+        <p>BTC • ETH • SOL • BNB • DMR4</p>
+    </div>
+
+    <div class="grid" id="market-grid">
+        <p>Conectando con la blockchain...</p>
+    </div>
+
+    <a href="juego.html" class="btn-jugar">🐄 ¡Jugar Agro-Clicker DMR4!</a>
 
     <div class="venta-section">
         <h2>🐄 Colección: Terneros Tech</h2>
         <div class="nft-item">
             <img src="img/terneros_001.jpg" alt="Terneros Tech">
-            <div style="padding:15px;">
+            <div style="padding:15px; text-align: left;">
                 <strong style="color: #fbbf24;">Génesis #001</strong>
-                <p>Precio: Consultar</p>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0;">Beneficio: +20% Producción</p>
+                <div style="font-weight: bold;">Precio: Consultar</div>
             </div>
         </div>
-        <a href="https://wa.me/573114275056?text=Hola,%20interesado%20en%20el%20NFT%20001" class="btn-whatsapp">
-            📱 Contactar WhatsApp
+        
+        <p>¿Interesado en adquirir este activo?</p>
+        <a href="https://wa.me/573114275056?text=Hola%20colega,%20estoy%20interesado%20en%20el%20NFT%20de%20los%20Terneros" class="btn-whatsapp">
+            📱 Contactar por WhatsApp
         </a>
     </div>
 
     <script>
         const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
-        firebase.database().ref('mercado').on('value', (snap) => {
-            const data = snap.val();
+        const dbRef = firebase.database().ref('mercado');
+
+        dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
             const grid = document.getElementById('market-grid');
             grid.innerHTML = '';
+
+            // Muestra BTC, ETH, SOL, BNB y DMR4 automáticamente
             for (const coin in data) {
-                grid.innerHTML += `<div class="card"><strong>${coin.toUpperCase()}</strong>: $${data[coin].precio}</div>`;
+                const isDMR4 = coin === 'dmr4';
+                grid.innerHTML += `
+                    <div class="card ${isDMR4 ? 'dmr4-card' : ''}">
+                        <div style="color: #94a3b8; font-size: 0.7rem;">${coin.toUpperCase()}</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;">$${data[coin].precio}</div>
+                        <div style="color: ${data[coin].cambio24h >= 0 ? '#4ade80' : '#f87171'}; font-size: 0.9rem;">${data[coin].cambio24h}%</div>
+                    </div>`;
             }
         });
     </script>
 </body>
 </html>
+
 
