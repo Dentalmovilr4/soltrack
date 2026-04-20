@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agro-Clicker DMR4</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        body { background-color: #020617; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .stat-box { background: #0f172a; padding: 15px; border-radius: 10px; border: 1px solid #38bdf8; margin: 10px; display: inline-block; min-width: 80px; }
+        #vaca { width: 180px; cursor: pointer; transition: 0.1s; user-select: none; }
+        #vaca:active { transform: scale(0.9); }
+        .btn-upgrade { background: #1e293b; color: white; border: 1px solid #fbbf24; padding: 12px; border-radius: 8px; width: 250px; margin: 10px auto; display: block; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>🚜 Agro-Clicker DMR4 Cloud</h2>
+    <div id="status">Sincronizando con la nube...</div>
+    <div>
+        <div class="stat-box">🥛 Leche<br><b id="l">0</b></div>
+        <div class="stat-box">💎 DMR4<br><b id="d">0</b></div>
+    </div>
+
+    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cow.png" id="vaca">
+
+    <button id="up" class="btn-upgrade">💧 Riego (+1 L/s) | 10 DMR4</button>
+    <a href="index.html" style="color:#38bdf8; text-decoration:none;">⬅️ Salir</a>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('usuarios/usuario_pro');
+
+        let leche = 0, dmr4 = 0, prod = 0;
+
+        // Cargar datos al iniciar
+        db.on('value', (snap) => {
+            const data = snap.val();
+            if(data) {
+                leche = data.leche || 0;
+                dmr4 = data.dmr4 || 0;
+                prod = data.prod || 0;
+                document.getElementById('status').innerText = "☁️ Datos Sincronizados";
+                actualizarUI();
+            }
+        });
+
+        function guardar() {
+            db.set({ leche, dmr4, prod });
+        }
+
+        function actualizarUI() {
+            document.getElementById('l').innerText = Math.floor(leche);
+            document.getElementById('d').innerText = dmr4;
+            document.getElementById('up').disabled = dmr4 < 10;
+        }
+
+        document.getElementById('vaca').onclick = () => {
+            leche += 1;
+            if(leche >= 10) { dmr4 += 1; leche %= 10; }
+            actualizarUI();
+            guardar();
+        };
+
+        document.getElementById('up').onclick = () => {
+            if(dmr4 >= 10) { dmr4 -= 10; prod += 1; actualizarUI(); guardar(); }
+        };
+
+        setInterval(() => {
+            if(prod > 0) {
+                leche += prod;
+                if(leche >= 10) { dmr4 += 1; leche %= 10; }
+                actualizarUI();
+                guardar();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
