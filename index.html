@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dentalmovilr4 Market</title>
     <style>
-        body { background-color: #050a18; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; }
-        .header { margin-bottom: 30px; }
-        .nav-links { color: #cbd5e1; font-size: 0.9em; margin-bottom: 20px; letter-spacing: 2px; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 500px; margin: 0 auto; }
-        .card { background: #0f172a; padding: 20px; border-radius: 20px; border: 1px solid #1e293b; text-align: left; position: relative; }
-        .card.active { border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
-        .card small { color: #94a3b8; font-weight: bold; }
-        .card h3 { margin: 10px 0 5px 0; font-size: 1.4em; }
-        .change { color: #4ade80; font-size: 0.8em; display: flex; align-items: center; }
-        .btn-juego { background: #fbbf24; color: #000; border: none; padding: 18px; width: 100%; max-width: 500px; border-radius: 40px; font-weight: bold; font-size: 1.1em; margin: 30px auto; cursor: pointer; display: block; text-decoration: none; }
-        .nft-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 40px; }
-        .nft-item { background: #0f172a; border-radius: 20px; width: 280px; overflow: hidden; border: 1px solid #1e293b; text-align: left; }
-        .nft-item img { width: 100%; height: 200px; object-fit: cover; }
+        body { background-color: #050a18; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
+        .header { margin-bottom: 25px; }
+        .nav-links { color: #94a3b8; font-size: 0.8em; margin-bottom: 20px; letter-spacing: 2px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 450px; margin: 0 auto; }
+        .card { background: #0f172a; padding: 15px; border-radius: 18px; border: 1px solid #1e293b; text-align: left; }
+        .card.active { border: 2px solid #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+        .card h3 { margin: 5px 0; font-size: 1.2em; }
+        .change { color: #4ade80; font-size: 0.75em; }
+        .btn-juego { background: #fbbf24; color: #000; text-decoration: none; padding: 15px; width: 100%; max-width: 450px; border-radius: 35px; font-weight: bold; margin: 25px auto; display: block; }
+        .nft-container { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 30px; }
+        .nft-item { background: #0f172a; border-radius: 20px; width: 90%; max-width: 400px; overflow: hidden; border: 1px solid #1e293b; text-align: left; }
+        .nft-item img { width: 100%; height: 220px; object-fit: cover; }
         .nft-info { padding: 15px; }
-        .price { color: #fbbf24; font-weight: bold; }
+        .price { color: #fbbf24; font-weight: bold; font-size: 1.1em; }
     </style>
 </head>
 <body>
@@ -28,8 +27,7 @@
         <div class="nav-links">BTC • ETH • SOL • BNB • DMR4</div>
     </div>
 
-    <div class="grid" id="market-grid">
-        </div>
+    <div class="grid" id="market-grid"></div>
 
     <a href="juego.html" class="btn-juego">🐄 ¡Jugar Agro-Clicker DMR4!</a>
 
@@ -47,6 +45,14 @@
             <img src="img/GoArt_1776626431201.jpg">
             <div class="nft-info"><strong>Agro-IA #001</strong><br><span class="price">0.7 SOL</span></div>
         </div>
+        <div class="nft-item">
+            <img src="img/GoArt_1776626442317.jpg">
+            <div class="nft-info"><strong>Agro-IA #002</strong><br><span class="price">0.8 SOL</span></div>
+        </div>
+        <div class="nft-item">
+            <img src="img/GoArt_1776626459982.jpg">
+            <div class="nft-info"><strong>Visionary #003</strong><br><span class="price">0.9 SOL</span></div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -54,22 +60,19 @@
     <script>
         const firebaseConfig = { databaseURL: "https://miproyectoreact-55e39-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref('mercado');
-
-        dbRef.on('value', (snap) => {
+        firebase.database().ref('mercado').on('value', (snap) => {
             const data = snap.val();
             const grid = document.getElementById('market-grid');
             if (!data) return;
             grid.innerHTML = '';
-            
             ['btc', 'eth', 'sol', 'bnb', 'dmr4'].forEach(coin => {
                 if(data[coin]) {
-                    const isActive = coin === 'dmr4' ? 'active' : '';
-                    const precioStr = coin === 'dmr4' ? data[coin].precio.toFixed(6) : data[coin].precio.toLocaleString();
+                    const isDmr = coin === 'dmr4';
+                    const p = isDmr ? data[coin].precio.toFixed(6) : data[coin].precio.toLocaleString();
                     grid.innerHTML += `
-                        <div class="card ${isActive}">
+                        <div class="card ${isDmr ? 'active' : ''}">
                             <small>${coin.toUpperCase()}</small>
-                            <h3>$${precioStr}</h3>
+                            <h3>$${p}</h3>
                             <div class="change">0% ▲</div>
                         </div>`;
                 }
